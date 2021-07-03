@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using AltudoApplication.Models;
+using AltudoApplication.Bussiness;
+using AltudoApplication.WebApp.Models;
 
 namespace AltudoApplication.Controllers
 {
@@ -20,11 +20,18 @@ namespace AltudoApplication.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            var formRequest = new FormRequest();
+            return View(formRequest);
         }
-
-        public IActionResult Privacy()
+        public IActionResult ElementExtractor(FormRequest formRequest)
         {
+            var url = new Uri(formRequest.URL);
+            //var url = new Uri("https://ge.globo.com/olimpiadas/noticia/brasil-vence-o-mexico-e-vai-a-final-do-pre-olimpico-de-basquete.ghtml");
+            //var url = new Uri("http://www.graintek.com.br/servicos");
+
+            var images = new ImageExtractor();
+            ViewBag.Images = images.ExtractImagesFromWebSite(url);   
+            
             return View();
         }
 
