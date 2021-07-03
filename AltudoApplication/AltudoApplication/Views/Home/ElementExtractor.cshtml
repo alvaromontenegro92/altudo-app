@@ -1,0 +1,15 @@
+﻿@{
+    ViewData["Title"] = "Privacy Policy";
+    List<Uri> images = (List<Uri>)ViewBag.Images;
+    int counter = 0;
+    string nameImage = "";
+}
+<h1>@ViewData["Title"]</h1>
+
+<p>Use this page to detail your site's privacy policy.</p>
+
+    @foreach (var image in images)
+    {
+        nameImage = (counter + 1).ToString();
+        <img src=@image.AbsoluteUri alt=nameImage>
+    }
