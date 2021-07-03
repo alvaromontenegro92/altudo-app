@@ -1,8 +1,17 @@
-﻿@{
+﻿@model AltudoApplication.WebApp.Models.FormRequest
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+    <div class="panel-body">
+        @using (Html.BeginForm("ElementExtractor", "Home", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, true, new { @class = "col-xs-12", role = "form" }))
+        {
+            <fieldset>
+                <label for="url">URL:</label>
+                <div class="form-group">
+                    @Html.TextBoxFor(Model => Model.URL, new { @class = "form-control", placeholder = "http://" })
+                </div>
+                <button type="submit" class="btn btn-lg btn-primary btn-block">Encontrar</button>
+            </fieldset>
+        }
+    </div>
