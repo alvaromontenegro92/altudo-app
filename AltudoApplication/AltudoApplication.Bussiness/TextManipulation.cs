@@ -50,8 +50,11 @@ namespace AltudoApplication.Business
 
         private void FilterTop10Words(ref List<object[]> words)
         {
-            words = words.GetRange(0, 10)
-                 .ToList();
+            words = words
+                .Where(word => word[0].ToString() != "")
+                .ToList()
+                .GetRange(0, 10)
+                .ToList();
         }
     }
 }
