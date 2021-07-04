@@ -52,10 +52,10 @@ namespace AltudoApplication.Business
 
                     var fullPathImage = new Uri(url, image);
 
-                    var imageExtension = Path.GetExtension(fullPathImage.AbsoluteUri);
+                    var imageExtension = Path.GetExtension(fullPathImage.AbsolutePath);
 
                     if (imagesExtension.Contains(imageExtension)
-                        && !imagesAddressFound.Contains(fullPathImage))
+                        && !imagesAddressFound.Exists(image => image.AbsolutePath == fullPathImage.AbsolutePath))
                         imagesAddressFound.Add(fullPathImage);
                 }
             }
