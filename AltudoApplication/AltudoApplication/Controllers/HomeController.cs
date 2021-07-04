@@ -4,8 +4,9 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using AltudoApplication.Models;
-using AltudoApplication.Bussiness;
+using AltudoApplication.Business;
 using AltudoApplication.WebApp.Models;
+using System.Net.Http;
 
 namespace AltudoApplication.Controllers
 {
@@ -24,27 +25,39 @@ namespace AltudoApplication.Controllers
         }
         public IActionResult ElementExtractor(FormRequest formRequest)
         {
-            var url = new Uri(formRequest.URL);
-            //var url = new Uri("https://ge.globo.com/olimpiadas/noticia/brasil-vence-o-mexico-e-vai-a-final-do-pre-olimpico-de-basquete.ghtml");
-            //var url = new Uri("http://www.graintek.com.br/servicos");
-            var htmlManager = new HtmlManager();
-            var response = htmlManager.GetSourceCodeFromWebSite(url);
+            var response = new HttpResponse();
 
-            if (response.Response.StatusCode == System.Net.HttpStatusCode.OK)
-            {                
-                var images = new ImageExtractor();
-                var words = new TextManipulation();
-
-                ViewBag.SubTitle = url.AbsoluteUri;
-                ViewBag.Images = images.ExtractImagesFromSourceCode(url, response.Content);
-                ViewBag.Words = words.GetTOP10Words(url, response.Content);
-
-                return View();
+            if (formRequest.URL == null)
+            {
+                response = new HttpResponse()
+                {
+                    Response = new HttpResponseMessage(System.Net.HttpStatusCode.NotFound)
+                    ,
+                    Content = String.Empty
+                };
             }
             else
             {
-                TempData["ErroAutenticacao"] = "URL Invalida. Tente novamente!";
+                var url = new Uri(formRequest.URL);
+                var htmlManager = new HtmlManager();
+                response = htmlManager.GetSourceCodeFromWebSite(url);
 
+                if (response.Response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    var images = new ImageExtractor();
+                    var words = new TextManipulation();
+
+                    ViewBag.SubTitle = url.AbsoluteUri;
+                    ViewBag.Images = images.ExtractImagesFromSourceCode(url, response.Content);
+                    ViewBag.Words = words.GetTOP10Words(url, response.Content);
+                }
+            }                
+
+            if (response.Response.StatusCode == System.Net.HttpStatusCode.OK)             
+                return View();
+            else
+            {
+                TempData["ErroAutenticacao"] = "URL Invalida. Tente novamente!";
                 return RedirectToAction("Index", "Home");
             }
             
