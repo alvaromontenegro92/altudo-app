@@ -4,7 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 
-namespace AltudoApplication.Bussiness
+namespace AltudoApplication.Business
 {
     public class TextExtractor
     {
@@ -16,87 +16,15 @@ namespace AltudoApplication.Bussiness
         private const string _commentCloseTag = "-->";
         private const string _initialTag = ">";
         private const string _finalTag = "<";
-        public List<string> ExtractTextFromWebSite(Uri url)
+        public string ExtractTextFromWebSite(Uri url)
         {
-            var sourceCode = GetSourceCodeFromWebSite(url.AbsoluteUri);
-            var imagesExtension = GetImageExtensionsAllowed();            
+            var sourceCode = GetSourceCodeFromWebSite(url.AbsoluteUri);     
 
-            var textFound = new List<string>();
+            var content = FilterSourceCode(sourceCode);
 
-            sourceCode = RemoveContent(sourceCode, _scriptOpenTag, _scriptCloseTag);
-            sourceCode = RemoveContent(sourceCode, _styleOpenTag, _styleCloseTag);
-            sourceCode = RemoveContent(sourceCode, _commentOpenTag, _commentCloseTag);
-
-            textFound = ExtractContent(sourceCode);
+            var textFound = ExtractTextContent(content);
 
             return textFound;
-        }
-
-        private string RemoveContent(string text, string openTag, string closeTag)
-        {
-            var initialPosition = 0;
-            var finalPosition = 0;
-            var execute = true;
-
-            while (execute)
-            {
-                if (!text.Contains(openTag))
-                    break;
-
-                initialPosition = text.IndexOf(openTag, 0);
-
-                if (initialPosition.Equals(-1))
-                    break;
-
-                finalPosition = text.IndexOf(closeTag, initialPosition) + closeTag.Length;
-
-                if (finalPosition.Equals(-1))
-                    break;
-
-                text = text.Remove(initialPosition, finalPosition - initialPosition);                               
-            }
-
-            return text;
-        }
-
-        private List<string> ExtractContent(string sourceCode)
-        {
-            var initialPosition = 0;
-            var finalPosition = 0;
-            var lastPositionFound = 0;
-            var execute = true;
-            var text = new List<string>();
-
-            while (execute)
-            {
-                if (sourceCode.Contains(_initialTag))
-                {
-                    initialPosition = sourceCode.IndexOf(_initialTag, lastPositionFound);
-
-                    if (initialPosition.Equals(-1))
-                        break;
-                    else
-                        initialPosition += _initialTag.Length;
-
-                    finalPosition = sourceCode.IndexOf(_finalTag, initialPosition);
-                    lastPositionFound = finalPosition;
-
-                    if (lastPositionFound.Equals(-1))
-                        break;
-
-                    var sentence = sourceCode
-                        .Substring(initialPosition, finalPosition - initialPosition);
-
-                    sentence = Regex.Replace(sentence, @"[\n\r\t]", "");
-                    sentence = WebUtility.HtmlDecode(sentence);
-
-                    if (!String.IsNullOrEmpty(sentence)
-                        && !String.IsNullOrWhiteSpace(sentence))
-                        text.Add(sentence);
-                }
-            }
-
-            return text;
         }
         private string GetSourceCodeFromWebSite(string url)
         {
@@ -115,17 +43,71 @@ namespace AltudoApplication.Bussiness
 
             return result;
         }
-
-
-
-        private List<string> GetImageExtensionsAllowed()
+        private string FilterSourceCode(string content)
         {
-            return new List<string>(new string[] { 
-                ".png", 
-                ".jpg", 
-                "jpge", 
-                ".bmp", 
-                ".svg" });
+            content = RemoveTags(content, _scriptOpenTag, _scriptCloseTag);
+            content = RemoveTags(content, _styleOpenTag, _styleCloseTag);
+            return RemoveTags(content, _commentOpenTag, _commentCloseTag);
         }
+        private string RemoveTags(string text, string openTag, string closeTag)
+        {
+            var execute = true;
+
+            while (execute)
+            {
+                if (!text.Contains(openTag))
+                    break;
+
+                var initialPosition = text.IndexOf(openTag, 0);
+
+                if (initialPosition.Equals(-1))
+                    break;
+
+                var finalPosition = text.IndexOf(closeTag, initialPosition) + closeTag.Length;
+
+                if (finalPosition.Equals(-1))
+                    break;
+
+                text = text.Remove(initialPosition, finalPosition - initialPosition);                               
+            }
+
+            return text;
+        }
+        private string ExtractTextContent(string sourceCode)
+        {
+            var finalPosition = 0;
+            var execute = true;
+            var text = String.Empty;
+
+            while (execute)
+            {
+                if (sourceCode.Contains(_initialTag))
+                {
+                    int initialPosition = sourceCode.IndexOf(_initialTag, finalPosition);
+
+                    if (initialPosition.Equals(-1))
+                        break;
+                    else
+                        initialPosition += _initialTag.Length;
+
+                    finalPosition = sourceCode.IndexOf(_finalTag, initialPosition);
+
+                    if (finalPosition.Equals(-1))
+                        break;
+
+                    var sentence = sourceCode
+                        .Substring(initialPosition, finalPosition - initialPosition);
+
+                    sentence = Regex.Replace(sentence, @"[\n\r\t]", "");
+                    sentence = WebUtility.HtmlDecode(sentence);
+
+                    if (!String.IsNullOrEmpty(sentence)
+                        && !String.IsNullOrWhiteSpace(sentence))
+                         text+= $" {sentence}";
+                }
+            }
+
+            return text;
+        }        
     }
 }
