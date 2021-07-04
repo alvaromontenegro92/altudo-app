@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 
-namespace AltudoApplication.Bussiness
+namespace AltudoApplication.Business
 {
     public class ImageExtractor
     {
