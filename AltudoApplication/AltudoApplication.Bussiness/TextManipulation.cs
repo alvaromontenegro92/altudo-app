@@ -7,21 +7,21 @@ namespace AltudoApplication.Business
 {
     public class TextManipulation
     {
-        public List<object[]> Execute(Uri url)
+        public List<object[]> GetTOP10Words(Uri url)
         {
-            var htmlContent = new TextExtractor();
+            var htmlTextContent = new TextExtractor();
 
-            var text = htmlContent.ExtractTextFromWebSite(url);
+            var text = htmlTextContent.ExtractTextFromWebSite(url);
 
-            var words = SplitText(text);
-            words = GroupElements(words);
-            words = OrderElements(words);
-            words = FilterElements(words);
+            var words = SplitTextIntoWords(text);
+            GroupWords(ref words);
+            OrderWords(ref words);
+            FilterTop10Words(ref words);
 
             return words;
         }
 
-        private List<object[]> SplitText(string text)
+        private List<object[]> SplitTextIntoWords(string text)
         {
             var words = text
                 .Split(" ")
@@ -31,9 +31,9 @@ namespace AltudoApplication.Business
             return words;
         }
 
-        private List<object[]> GroupElements(List<object[]> words)
+        private void GroupWords(ref List<object[]> words)
         {
-            return words.GroupBy(word => word[0].ToString())
+            words =  words.GroupBy(word => word[0].ToString())
              .Select(x => new object[]
              {
                  x.Key,
@@ -42,15 +42,15 @@ namespace AltudoApplication.Business
              .ToList();
         }
 
-        private List<object[]> OrderElements(List<object[]> words)
+        private void OrderWords(ref List<object[]> words)
         {
-           return words.OrderByDescending(word => word[1])
+           words = words.OrderByDescending(word => word[1])
                 .ToList();
         }
 
-        private List<object[]> FilterElements(List<object[]> words)
+        private void FilterTop10Words(ref List<object[]> words)
         {
-            return words.GetRange(0, 10)
+            words = words.GetRange(0, 10)
                  .ToList();
         }
     }
