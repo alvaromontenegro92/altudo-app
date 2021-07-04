@@ -1,0 +1,30 @@
+﻿@model AltudoApplication.WebApp.Models.FormRequest
+@{
+    ViewData["Title"] = "Home Page";
+    var tempData = TempData["ErroAutenticacao"];
+    var erroAutenticacao = tempData != null ? tempData.ToString() : string.Empty;
+}
+
+    <div class="panel-body">
+        @using (Html.BeginForm("ElementExtractor", "Home", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, true, new { @class = "col-xs-12", role = "form" }))
+        {
+        <fieldset>
+            <div>
+                <p style="font-weight:bolder">Iremos buscar todas as imagens e também o TOP 10 de palavras mais utilizadas do Website indicado abaixo.</p>
+            </div>
+            <br />
+            <div class="form-group">
+                <label for="url">Digite o endereço de um Website:</label>
+                @Html.TextBoxFor(Model => Model.URL, new { @class = "form-control", placeholder = "http://" })
+                @Html.ValidationMessageFor(Model => Model.URL, string.Empty, htmlAttributes: new { @class = "text-danger" })
+            </div>
+            @if (!string.IsNullOrEmpty(erroAutenticacao))
+            {
+                <text>
+                    <span class="text-danger">@erroAutenticacao</span>
+                </text>
+            }
+            <button type="submit" class="btn btn-lg btn-primary btn-block">Vamos lá!</button>
+        </fieldset>
+        }
+    </div>
