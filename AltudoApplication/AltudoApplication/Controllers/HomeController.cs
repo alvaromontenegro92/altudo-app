@@ -20,19 +20,34 @@ namespace AltudoApplication.Controllers
 
         public IActionResult Index()
         {
-            var formRequest = new FormRequest();
-            return View(formRequest);
+            return View(new FormRequest());
         }
         public IActionResult ElementExtractor(FormRequest formRequest)
         {
             var url = new Uri(formRequest.URL);
             //var url = new Uri("https://ge.globo.com/olimpiadas/noticia/brasil-vence-o-mexico-e-vai-a-final-do-pre-olimpico-de-basquete.ghtml");
             //var url = new Uri("http://www.graintek.com.br/servicos");
+            var htmlManager = new HtmlManager();
+            var response = htmlManager.GetSourceCodeFromWebSite(url);
 
-            var images = new ImageExtractor();
-            ViewBag.Images = images.ExtractImagesFromWebSite(url);   
+            if (response.Response.StatusCode == System.Net.HttpStatusCode.OK)
+            {                
+                var images = new ImageExtractor();
+                var words = new TextManipulation();
+
+                ViewBag.SubTitle = url.AbsoluteUri;
+                ViewBag.Images = images.ExtractImagesFromSourceCode(url, response.Content);
+                ViewBag.Words = words.GetTOP10Words(url, response.Content);
+
+                return View();
+            }
+            else
+            {
+                TempData["ErroAutenticacao"] = "URL Invalida. Tente novamente!";
+
+                return RedirectToAction("Index", "Home");
+            }
             
-            return View();
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

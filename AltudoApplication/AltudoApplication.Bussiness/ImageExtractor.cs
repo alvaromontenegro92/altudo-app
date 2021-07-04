@@ -10,31 +10,12 @@ namespace AltudoApplication.Business
         private const string _initialCharacter = "src=\"";
         private const string _finalCharacter = "\"";
         private string[] _imagesExtension = {".png", ".jpg", ".jpge", ".bmp", ".svg", ".tiff", ".gif", ".avif", ".exif", ".raw", ".webp" };
-        public List<Uri> ExtractImagesFromWebSite(Uri url)
-        {
-            var sourceCode = GetSourceCodeFromWebSite(url.AbsoluteUri);
+        public List<Uri> ExtractImagesFromSourceCode(Uri url, string sourceCode)
+        {            
             var imagesExtension = GetImageExtensionsAllowed();
             var imagesAddress = GetImageAddress(url, sourceCode, imagesExtension);
 
             return imagesAddress;
-        }
-
-        private string GetSourceCodeFromWebSite(string url)
-        {
-            var result = String.Empty;
-
-            using (HttpClient client = new HttpClient())
-            {
-                using (HttpResponseMessage response = client.GetAsync(url).Result)
-                {
-                    using (HttpContent content = response.Content)
-                    {
-                        result = content.ReadAsStringAsync().Result;
-                    }
-                }
-            }
-
-            return result;
         }
         private List<string> GetImageExtensionsAllowed()
         {

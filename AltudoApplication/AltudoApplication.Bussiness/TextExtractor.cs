@@ -16,30 +16,12 @@ namespace AltudoApplication.Business
         private const string _commentCloseTag = "-->";
         private const string _initialTag = ">";
         private const string _finalTag = "<";
-        public string ExtractTextFromWebSite(Uri url)
-        {
-            var sourceCode = GetSourceCodeFromWebSite(url.AbsoluteUri);     
+        public string ExtractTextFromSourceCode(string sourceCode)
+        {  
             var content = FilterSourceCode(sourceCode);
             var textFound = ExtractTextContent(content);
 
             return textFound;
-        }
-        private string GetSourceCodeFromWebSite(string url)
-        {
-            var result = String.Empty;
-
-            using (HttpClient client = new HttpClient())
-            {
-                using (HttpResponseMessage response = client.GetAsync(url).Result)
-                {
-                    using (HttpContent content = response.Content)
-                    {
-                        result = content.ReadAsStringAsync().Result;
-                    }
-                }
-            }
-
-            return result;
         }
         private string FilterSourceCode(string content)
         {

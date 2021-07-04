@@ -1,6 +1,8 @@
 ﻿@model AltudoApplication.WebApp.Models.FormRequest
 @{
     ViewData["Title"] = "Home Page";
+    var tempData = TempData["ErroAutenticacao"];
+    var erroAutenticacao = tempData != null ? tempData.ToString() : string.Empty;
 }
 
     <div class="panel-body">
@@ -14,7 +16,14 @@
             <div class="form-group">
                 <label for="url">Digite o endereço de um Website:</label>
                 @Html.TextBoxFor(Model => Model.URL, new { @class = "form-control", placeholder = "http://" })
+                @Html.ValidationMessageFor(Model => Model.URL, string.Empty, htmlAttributes: new { @class = "text-danger" })
             </div>
+            @if (!string.IsNullOrEmpty(erroAutenticacao))
+            {
+                <text>
+                    <span class="text-danger">@erroAutenticacao</span>
+                </text>
+            }
             <button type="submit" class="btn btn-lg btn-primary btn-block">Vamos lá!</button>
         </fieldset>
         }

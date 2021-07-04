@@ -7,11 +7,11 @@ namespace AltudoApplication.Business
 {
     public class TextManipulation
     {
-        public List<object[]> GetTOP10Words(Uri url)
+        public List<object[]> GetTOP10Words(Uri url, string sourceCode)
         {
             var htmlTextContent = new TextExtractor();
 
-            var text = htmlTextContent.ExtractTextFromWebSite(url);
+            var text = htmlTextContent.ExtractTextFromSourceCode(sourceCode);
 
             var words = SplitTextIntoWords(text);
             GroupWords(ref words);
