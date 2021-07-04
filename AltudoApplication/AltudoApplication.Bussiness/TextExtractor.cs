@@ -19,9 +19,7 @@ namespace AltudoApplication.Business
         public string ExtractTextFromWebSite(Uri url)
         {
             var sourceCode = GetSourceCodeFromWebSite(url.AbsoluteUri);     
-
             var content = FilterSourceCode(sourceCode);
-
             var textFound = ExtractTextContent(content);
 
             return textFound;
@@ -98,7 +96,7 @@ namespace AltudoApplication.Business
                     var sentence = sourceCode
                         .Substring(initialPosition, finalPosition - initialPosition);
 
-                    sentence = Regex.Replace(sentence, @"[\n\r\t]", "");
+                    sentence = Regex.Replace(sentence, @"[\n\r\t@|-]", "");
                     sentence = WebUtility.HtmlDecode(sentence);
 
                     if (!String.IsNullOrEmpty(sentence)
