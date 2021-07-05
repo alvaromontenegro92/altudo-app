@@ -28,7 +28,8 @@ To inspect and run this application, you need to follow these steps:
   - Select the **AltudoApplication.sln** file
   - Feel free to inspect the code.
   - If you want to debug or play the app, click in the button **ISS Express** (green arrow button) or press **F5** to start the application.
-  - Now, the application will start.
+  - Now, the application will start in your web browser.
+  - If any alert message appear, you must click in **Advanced > Accept the risk and continue** 
   - Enjoy!
 
 ## Features
